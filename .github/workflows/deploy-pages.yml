@@ -26,6 +26,20 @@ jobs:
     steps:
       - uses: actions/checkout@v5
 
+      # configure-pages creates a missing Pages site, but it will NOT
+      # switch an existing site off the legacy "deploy from a branch"
+      # source - and with the legacy source active, our deployment is
+      # rejected and a Jekyll build of the README overwrites the site
+      # on every push. Force the source to "GitHub Actions" first.
+      - name: Set Pages source to GitHub Actions
+        run: |
+          curl -sf -X PUT \
+            -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+            -H "Accept: application/vnd.github+json" \
+            "https://api.github.com/repos/${{ github.repository }}/pages" \
+            -d '{"build_type":"workflow"}' \
+          || echo "::warning::Could not switch the Pages source automatically. Set Settings -> Pages -> Source to 'GitHub Actions' manually."
+
       - name: Enable GitHub Pages
         uses: actions/configure-pages@v5
         with:
