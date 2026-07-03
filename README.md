@@ -29,31 +29,81 @@ timestamp. The simulator drifts states every 5 s using per-room occupancy
 profiles that respect office hours (9 AM–5 PM), so after-hours "forgotten
 devices" occur naturally and trigger alerts.
 
-## Quick start
+## Run it on your machine (clone → running in ~2 minutes)
 
-Prerequisites: **Node.js ≥ 20**. MongoDB, a Discord token and an Anthropic
-key are all *optional* — the system runs fully without them.
+### 0. Prerequisites
+
+- **Node.js ≥ 20** (check with `node --version`) — https://nodejs.org
+- **Git**
+- Optional: MongoDB, a Discord bot token, an Anthropic API key — the
+  system runs fully without any of them.
 
 > Node's per-project `node_modules` is the isolated environment here (the
 > Node equivalent of a Python virtualenv) — dependencies never install
 > globally.
 
+### 1. Clone the repository
+
 ```bash
-# 1. Backend (API + simulator + bot) — http://localhost:4000
+git clone https://github.com/farhanfuad02/HackathonProject.git
+cd HackathonProject
+```
+
+### 2. Start the backend (terminal 1)
+
+```bash
 cd backend
 npm install
-cp .env.example .env        # optional: fill in Mongo/Discord/Anthropic
 npm start
+```
 
-# 2. Frontend (dashboard) — http://localhost:5173
-cd ../frontend
+You should see:
+
+```
+[db] MongoDB unavailable (...) - continuing with in-memory store only   # fine!
+[simulator] running - 15 devices, tick every 5000ms
+[api] listening on http://localhost:4000
+```
+
+Sanity check (optional): open http://localhost:4000/api/health — should
+return `{"ok":true, ... "devices":15}`.
+
+### 3. Start the dashboard (terminal 2 — keep terminal 1 running)
+
+```bash
+cd frontend        # from the repo root
 npm install
 npm run dev
 ```
 
-Open http://localhost:5173 — the floor plan, power meter and alerts update
-live over Socket.IO (no page refresh). Click any device row to toggle it
-manually and watch every panel react.
+### 4. Open the dashboard
+
+Go to **http://localhost:5173** — the floor plan, power meter and alerts
+update live over Socket.IO (no page refresh). Click any device row to
+toggle it manually and watch every panel react.
+
+### 5. Optional integrations
+
+Only needed for persistence / the Discord bot / Claude replies:
+
+```bash
+cd backend
+cp .env.example .env       # Windows: copy .env.example .env
+```
+
+Then fill in any of `MONGODB_URI`, `DISCORD_BOT_TOKEN`,
+`DISCORD_ALERT_CHANNEL_ID`, `ANTHROPIC_API_KEY` (details in the sections
+below) and restart the backend.
+
+### Troubleshooting
+
+| Symptom | Fix |
+|---|---|
+| `EADDRINUSE: ... 4000` or `5173` | Another process holds the port — stop it, or change `PORT` in `backend/.env` (update `frontend/vite.config.js` proxy to match) |
+| Dashboard stuck on "Connecting to the office…" | Backend isn't running — start terminal 1 first, then refresh |
+| `[db] MongoDB unavailable` warning | Expected without MongoDB; ignore, or start MongoDB and restart the backend |
+| Bot silent in Discord | Check `DISCORD_BOT_TOKEN` in `backend/.env` and that **Message Content Intent** is enabled in the Discord developer portal |
+| `node: command not found` / old Node errors | Install Node.js ≥ 20 from https://nodejs.org and reopen the terminal |
 
 ### MongoDB (optional persistence)
 
