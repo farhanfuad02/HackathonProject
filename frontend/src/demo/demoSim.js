@@ -48,6 +48,7 @@ let devices = [];
 let alerts = [];
 let powerHistory = [];
 let energy = null;
+let emit = null; // snapshot callback, set by startDemoSim
 
 /* ------------------------------------------------------- helpers */
 
@@ -267,6 +268,20 @@ function snapshot(now) {
 }
 
 /**
+ * Manual override, mirroring POST /api/devices/:id/toggle on the real
+ * backend: flip the device and push a fresh snapshot immediately.
+ * (The occupancy drift may still flip it back on a later tick - the
+ * backend simulator behaves the same way.)
+ */
+export function toggleDemoDevice(id) {
+  const device = devices.find((d) => d.id === id);
+  if (!device || !emit) return;
+  const now = new Date();
+  setDeviceStatus(device, device.status === "on" ? "off" : "on", now);
+  emit(snapshot(now));
+}
+
+/**
  * Start the in-browser simulator. Calls onSnapshot immediately with a
  * fully backfilled state, then every tick. Returns a stop() function.
  */
@@ -276,6 +291,7 @@ export function startDemoSim(onSnapshot, tickMs = 5000) {
   alerts = [];
   powerHistory = [];
   energy = null;
+  emit = onSnapshot;
 
   // Backfill: replay ticks over the past ~15 minutes with a virtual
   // clock so the sparkline and kWh counters look lived-in at load.

@@ -1,4 +1,5 @@
 import React from "react";
+import { toggleDevice } from "../api.js";
 
 function sinceLabel(iso) {
   const mins = Math.max(0, Math.round((Date.now() - new Date(iso)) / 60000));
@@ -16,10 +17,6 @@ function sinceLabel(iso) {
 export default function RoomPanel({ state }) {
   const { rooms, devices } = state;
 
-  const toggle = (id) => {
-    fetch(`/api/devices/${id}/toggle`, { method: "POST" }).catch(() => {});
-  };
-
   return (
     <div className="rooms-grid">
       {rooms.map((room) => {
@@ -34,7 +31,7 @@ export default function RoomPanel({ state }) {
                   <li key={d.id}>
                     <button
                       className="device-row"
-                      onClick={() => toggle(d.id)}
+                      onClick={() => toggleDevice(d.id)}
                       title="Click to toggle (manual override)"
                     >
                       <span className="device-icon">
