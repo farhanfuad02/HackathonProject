@@ -1,0 +1,88 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 980 620" font-family="Segoe UI, system-ui, sans-serif">
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#52514e"/>
+    </marker>
+  </defs>
+
+  <style>
+    .box { fill: #ffffff; stroke: #52514e; stroke-width: 1.5; rx: 10; }
+    .layer { fill: #f4f7fd; stroke: #2a78d6; stroke-width: 1.5; }
+    .title { font-size: 15px; font-weight: 600; fill: #0b0b0b; }
+    .small { font-size: 11.5px; fill: #52514e; }
+    .flow  { font-size: 11px; fill: #2a78d6; font-weight: 600; }
+    .edge  { stroke: #52514e; stroke-width: 1.6; fill: none; marker-end: url(#arrow); }
+  </style>
+
+  <text x="490" y="34" text-anchor="middle" font-size="20" font-weight="700" fill="#0b0b0b">Office Electricity Monitor — System Architecture</text>
+  <text x="490" y="54" text-anchor="middle" class="small">device state → shared backend → live dashboard update + Discord message</text>
+
+  <!-- Simulated device layer -->
+  <rect class="layer" x="60" y="90" width="860" height="86" rx="12"/>
+  <text x="80" y="116" class="title">SIMULATED DEVICE LAYER  (backend/src/services/simulator.js)</text>
+  <text x="80" y="138" class="small">15 devices — 3 rooms × (2 fans + 3 lights) · occupancy-aware state drift every 5 s</text>
+  <text x="80" y="156" class="small">each device: status (on/off) · rated watts (fan ≈ 55–75 W, light ≈ 12–18 W) · room · lastChanged timestamp</text>
+
+  <!-- Backend core -->
+  <rect class="layer" x="60" y="216" width="860" height="150" rx="12"/>
+  <text x="80" y="242" class="title">SHARED BACKEND  (Node.js + Express, single process)</text>
+
+  <rect class="box" x="90" y="258" width="250" height="88" rx="10"/>
+  <text x="105" y="282" class="title" font-size="13.5">In-memory Store</text>
+  <text x="105" y="301" class="small">single source of truth:</text>
+  <text x="105" y="317" class="small">devices · power history · daily kWh</text>
+  <text x="105" y="333" class="small">alert engine (after-hours, 2h+ run)</text>
+
+  <rect class="box" x="392" y="258" width="240" height="88" rx="10"/>
+  <text x="407" y="282" class="title" font-size="13.5">Express REST API</text>
+  <text x="407" y="301" class="small">GET /api/devices · /rooms/:name</text>
+  <text x="407" y="317" class="small">GET /api/usage · /alerts · /snapshot</text>
+  <text x="407" y="333" class="small">POST /api/devices/:id/toggle</text>
+
+  <rect class="box" x="672" y="258" width="220" height="88" rx="10"/>
+  <text x="687" y="282" class="title" font-size="13.5">MongoDB (mongoose)</text>
+  <text x="687" y="301" class="small">mirrors devices, alerts and</text>
+  <text x="687" y="317" class="small">daily energy — restores state</text>
+  <text x="687" y="333" class="small">on restart · optional</text>
+
+  <!-- Interfaces -->
+  <rect class="box" x="90" y="430" width="280" height="100" rx="10"/>
+  <text x="105" y="456" class="title" font-size="13.5">Web Dashboard (React + Vite)</text>
+  <text x="105" y="476" class="small">Socket.IO push on every tick — no refresh</text>
+  <text x="105" y="492" class="small">live floor plan (glowing lights, spinning fans)</text>
+  <text x="105" y="508" class="small">power meter · per-room bars · alerts panel</text>
+
+  <rect class="box" x="430" y="430" width="280" height="100" rx="10"/>
+  <text x="445" y="456" class="title" font-size="13.5">Discord Bot (discord.js)</text>
+  <text x="445" y="476" class="small">!status · !room &lt;name&gt; · !usage · !alerts</text>
+  <text x="445" y="492" class="small">replies humanized by Claude (Anthropic API)</text>
+  <text x="445" y="508" class="small">proactive alert posts to a channel (bonus)</text>
+
+  <rect class="box" x="760" y="430" width="160" height="100" rx="10"/>
+  <text x="775" y="456" class="title" font-size="13.5">Users</text>
+  <text x="775" y="476" class="small">boss + team</text>
+  <text x="775" y="492" class="small">browser ⇄ dashboard</text>
+  <text x="775" y="508" class="small">Discord ⇄ bot</text>
+
+  <!-- Edges -->
+  <path class="edge" d="M 490 176 L 490 216"/>
+  <text x="500" y="200" class="flow">tick: state + timestamps</text>
+
+  <path class="edge" d="M 340 302 L 392 302"/>
+  <text x="344" y="294" class="flow">reads</text>
+
+  <path class="edge" d="M 632 302 L 672 302"/>
+  <text x="634" y="294" class="flow">sync</text>
+
+  <path class="edge" d="M 180 366 L 180 430"/>
+  <text x="190" y="402" class="flow">Socket.IO “state” push + REST</text>
+
+  <path class="edge" d="M 540 366 L 540 430"/>
+  <text x="550" y="402" class="flow">same store, same process</text>
+
+  <path class="edge" d="M 370 480 L 760 470" stroke-dasharray="4 3"/>
+  <path class="edge" d="M 710 490 L 760 490" stroke-dasharray="4 3"/>
+  <text x="720" y="465" class="flow"> </text>
+
+  <text x="490" y="590" text-anchor="middle" class="small">[Simulated Device Layer] → [Backend API + Store] → [Web UI] &amp;&amp; [Discord Bot] — both interfaces always reflect the same live state</text>
+</svg>
