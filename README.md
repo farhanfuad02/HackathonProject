@@ -44,8 +44,8 @@ locally as below.
 
 Deployment is automatic: every push to `main` triggers
 [`.github/workflows/deploy-pages.yml`](.github/workflows/deploy-pages.yml),
-which builds `frontend/` in demo mode and publishes `dist/` to Pages.
-One-time setup: repo **Settings → Pages → Source: "GitHub Actions"**.
+which enables the Pages site if needed, builds `frontend/` in demo mode
+and publishes `dist/` — no manual repository settings required.
 
 ## Run it on your machine (clone → running in ~2 minutes)
 

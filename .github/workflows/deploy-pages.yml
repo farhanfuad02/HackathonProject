@@ -1,7 +1,8 @@
 # Builds the frontend in demo mode (in-browser simulator, no backend
 # needed) and publishes it to GitHub Pages on every push to main.
 #
-# One-time repo setup: Settings -> Pages -> Source: "GitHub Actions".
+# No manual setup required: the configure-pages step enables the Pages
+# site (source: "GitHub Actions") on first run.
 
 name: Deploy to GitHub Pages
 
@@ -23,9 +24,14 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
-      - uses: actions/setup-node@v4
+      - name: Enable GitHub Pages
+        uses: actions/configure-pages@v5
+        with:
+          enablement: true
+
+      - uses: actions/setup-node@v5
         with:
           node-version: 22
           cache: npm
