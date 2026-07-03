@@ -1,0 +1,14 @@
+# dependencies
+node_modules/
+
+# environment secrets - never commit tokens/keys
+.env
+*.env.local
+
+# build output
+frontend/dist/
+
+# logs & OS noise
+*.log
+.DS_Store
+Thumbs.db
