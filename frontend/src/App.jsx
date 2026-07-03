@@ -8,7 +8,7 @@ import PowerPanel from "./components/PowerPanel.jsx";
 import AlertsPanel from "./components/AlertsPanel.jsx";
 
 export default function App() {
-  const { state, connected } = useLiveState();
+  const { state, connected, demo } = useLiveState();
 
   if (!state) {
     return (
@@ -21,7 +21,7 @@ export default function App() {
 
   return (
     <div className="app">
-      <Header time={state.time} connected={connected} />
+      <Header time={state.time} connected={connected} demo={demo} />
       <StatTiles state={state} />
 
       <section className="panel map-panel">
@@ -46,8 +46,10 @@ export default function App() {
       </section>
 
       <footer className="footer">
-        Office Electricity Monitor · simulated device layer · data refreshes
-        live over Socket.IO
+        Office Electricity Monitor · simulated device layer ·{" "}
+        {demo
+          ? "static demo build — simulator runs in your browser"
+          : "data refreshes live over Socket.IO"}
       </footer>
     </div>
   );

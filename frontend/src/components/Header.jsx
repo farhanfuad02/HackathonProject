@@ -1,6 +1,6 @@
 import React from "react";
 
-export default function Header({ time, connected }) {
+export default function Header({ time, connected, demo }) {
   const clock = new Date(time).toLocaleTimeString([], {
     hour: "2-digit",
     minute: "2-digit",
@@ -17,7 +17,7 @@ export default function Header({ time, connected }) {
       <div className="header-right">
         <span className={`conn ${connected ? "conn-on" : "conn-off"}`}>
           <span className="conn-dot" />
-          {connected ? "Live" : "Reconnecting…"}
+          {demo ? "Demo data" : connected ? "Live" : "Reconnecting…"}
         </span>
         <span className="clock">{clock}</span>
       </div>

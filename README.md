@@ -29,6 +29,24 @@ timestamp. The simulator drifts states every 5 s using per-room occupancy
 profiles that respect office hours (9 AM–5 PM), so after-hours "forgotten
 devices" occur naturally and trigger alerts.
 
+## Live demo (GitHub Pages)
+
+**https://farhanfuad02.github.io/HackathonProject/** — the dashboard,
+no install needed.
+
+GitHub Pages only serves static files, so the Express/Socket.IO backend
+can't run there. The Pages build (`VITE_DEMO=true`) instead runs the same
+simulator **in your browser** (`frontend/src/demo/demoSim.js` — a direct
+port of the backend's simulator, store and alert rules), producing
+identical snapshots. The header shows a **"Demo data"** badge in this
+mode. Device toggling and the Discord bot need the real backend — run it
+locally as below.
+
+Deployment is automatic: every push to `main` triggers
+[`.github/workflows/deploy-pages.yml`](.github/workflows/deploy-pages.yml),
+which builds `frontend/` in demo mode and publishes `dist/` to Pages.
+One-time setup: repo **Settings → Pages → Source: "GitHub Actions"**.
+
 ## Run it on your machine (clone → running in ~2 minutes)
 
 ### 0. Prerequisites
@@ -187,9 +205,12 @@ backend/
 frontend/
   src/
     App.jsx              page layout
-    hooks/useLiveState.js  Socket.IO subscription
+    hooks/useLiveState.js  Socket.IO subscription (or demo sim)
+    demo/demoSim.js      in-browser simulator for the Pages build
     components/          Header, StatTiles, OfficeMap, PowerPanel,
                          AlertsPanel, RoomPanel
+.github/workflows/
+  deploy-pages.yml       builds frontend (demo mode) -> GitHub Pages
 docs/
   system-diagram.svg     high-level architecture (no Mermaid)
   hardware-schematic.md  ESP32 sensing circuit - pin maps + reasoning
